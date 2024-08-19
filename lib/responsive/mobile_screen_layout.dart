@@ -20,7 +20,6 @@ class _MobileScreenLayoutState extends State<MobileScreenLayOut> {
     // TODO: implement initState
     super.initState();
     pageController = PageController();
-
   }
 
   @override
@@ -28,7 +27,6 @@ class _MobileScreenLayoutState extends State<MobileScreenLayOut> {
     // TODO: implement dispose
     super.dispose();
     pageController.dispose();
-
   }
 
   void onPageChanged(int page) {
@@ -46,6 +44,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayOut> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
+      backgroundColor: Colors.black,
       body: PageView(
         controller: pageController,
         onPageChanged: onPageChanged,
@@ -58,9 +57,8 @@ class _MobileScreenLayoutState extends State<MobileScreenLayOut> {
                 Icons.home,
                 color: (_page == 0) ? primaryColor : secondaryColor,
               ),
-            label: '',
-            backgroundColor: primaryColor
-          ),
+              label: '',
+              backgroundColor: primaryColor),
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.search,
@@ -94,7 +92,6 @@ class _MobileScreenLayoutState extends State<MobileScreenLayOut> {
         ],
         onTap: navigationTapped,
         currentIndex: _page,
-
       ),
     );
   }

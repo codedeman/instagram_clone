@@ -18,6 +18,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Uint8List? _file;
   bool isLoading = false;
   final TextEditingController _descriptionController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<UserProvider>(context, listen: false).refreshUser();
+  }
 
   _selectImage(BuildContext parentContext) async {
     return showDialog(
@@ -40,11 +45,21 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 padding: const EdgeInsets.all(20),
                 child: const Text('Choose from Gallery'),
                 onPressed: () async {
-                  Navigator.of(context).pop();
-                  Uint8List file = await pickImage(ImageSource.gallery);
-                  setState(() {
-                    _file = file;
-                  });
+                  try {
+                    Navigator.of(context).pop();
+                    Uint8List file = await pickImage(ImageSource.gallery);
+                    if (file.isNotEmpty) {
+                      setState(() {
+                        _file = file;
+                      });
+                    } else {
+                      // Handle the case where the image is empty (just in case)
+                      print('Picked image is empty');
+                    }
+                  } catch (e) {
+                    // Handle any potential errors that might occur during image picking
+                    print('Error picking image: $e');
+                  }
                 }),
             SimpleDialogOption(
               padding: const EdgeInsets.all(20),
@@ -118,87 +133,87 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
     return _file == null
         ? Center(
-      child: IconButton(
-        icon: const Icon(
-          Icons.upload,
-        ),
-        onPressed: () => _selectImage(context),
-      ),
-    )
-        : Scaffold(
-      appBar: AppBar(
-        backgroundColor: mobileBackgroundColor,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: clearImage,
-        ),
-        title: const Text(
-          'Post to',
-        ),
-        centerTitle: false,
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => postImage(
-              userProvider.getUser.uid,
-              userProvider.getUser.username,
-              userProvider.getUser.photoUrl,
-            ),
-            child: const Text(
-              "Post",
-              style: TextStyle(
-                  color: Colors.blueAccent,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.0),
+            child: IconButton(
+              icon: const Icon(
+                Icons.upload,
+              ),
+              onPressed: () => _selectImage(context),
             ),
           )
-        ],
-      ),
-      // POST FORM
-      body: Column(
-        children: <Widget>[
-          isLoading
-              ? const LinearProgressIndicator()
-              : const Padding(padding: EdgeInsets.only(top: 0.0)),
-          const Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              CircleAvatar(
-                backgroundImage: NetworkImage(
-                  userProvider.getUser.photoUrl,
-                ),
+        : Scaffold(
+            appBar: AppBar(
+              backgroundColor: mobileBackgroundColor,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: clearImage,
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.3,
-                child: TextField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(
-                      hintText: "Write a caption...",
-                      border: InputBorder.none),
-                  maxLines: 8,
-                ),
+              title: const Text(
+                'Post to',
               ),
-              SizedBox(
-                height: 45.0,
-                width: 45.0,
-                child: AspectRatio(
-                  aspectRatio: 487 / 451,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          alignment: FractionalOffset.topCenter,
-                          image: MemoryImage(_file!),
-                        )),
+              centerTitle: false,
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => postImage(
+                    userProvider.getUser.uid,
+                    userProvider.getUser.username,
+                    userProvider.getUser.photoUrl,
                   ),
+                  child: const Text(
+                    "Post",
+                    style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0),
+                  ),
+                )
+              ],
+            ),
+            // POST FORM
+            body: Column(
+              children: <Widget>[
+                isLoading
+                    ? const LinearProgressIndicator()
+                    : const Padding(padding: EdgeInsets.only(top: 0.0)),
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        userProvider.getUser.photoUrl,
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      child: TextField(
+                        controller: _descriptionController,
+                        decoration: const InputDecoration(
+                            hintText: "Write a caption...",
+                            border: InputBorder.none),
+                        maxLines: 8,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 45.0,
+                      width: 45.0,
+                      child: AspectRatio(
+                        aspectRatio: 487 / 451,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                            fit: BoxFit.fill,
+                            alignment: FractionalOffset.topCenter,
+                            image: MemoryImage(_file!),
+                          )),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          const Divider(),
-        ],
-      ),
-    );
+                const Divider(),
+              ],
+            ),
+          );
   }
 }
