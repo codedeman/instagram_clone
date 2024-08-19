@@ -180,20 +180,24 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     CircleAvatar(
+                      backgroundColor: Colors.red,
                       backgroundImage: NetworkImage(
                         userProvider.getUser!.photoUrl,
                       ),
                     ),
+                    // SizedBox(width: 8), //
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.3,
+                      width: MediaQuery.of(context).size.width * 0.5,
                       child: TextField(
                         controller: _descriptionController,
                         decoration: const InputDecoration(
-                            hintText: "Write a caption...",
-                            border: InputBorder.none),
+                          hintText: "Write a caption...",
+                          border: InputBorder.none,
+                        ),
                         maxLines: 8,
                       ),
                     ),
+                    SizedBox(width: 8), //
                     SizedBox(
                       height: 45.0,
                       width: 45.0,
