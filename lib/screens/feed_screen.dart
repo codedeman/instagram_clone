@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:instagram_clone/helper/demesion.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../helper/color.dart';
 import '../widgets/post_card.dart';
@@ -17,7 +18,6 @@ class FeedScreen extends StatefulWidget {
 class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor:
@@ -47,19 +47,49 @@ class _FeedScreenState extends State<FeedScreen> {
         builder: (context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
+            return ListView.builder(
+              itemCount: 5, // Shimmer effect for 5 items as a placeholder
+              itemBuilder: (ctx, index) => Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  margin: EdgeInsets.symmetric(
+                    horizontal: width > webScreenSize ? width * 0.3 : 0,
+                    vertical: width > webScreenSize ? 15 : 0,
+                  ),
+                  child: Card(
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.grey,
+                      ),
+                      title: Container(
+                        height: 10,
+                        color: Colors.grey,
+                      ),
+                      subtitle: Container(
+                        height: 10,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('An error occurred: ${snapshot.error}'),
             );
           }
+
           return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
+            itemCount: snapshot.data?.docs.length,
             itemBuilder: (ctx, index) => Container(
               margin: EdgeInsets.symmetric(
                 horizontal: width > webScreenSize ? width * 0.3 : 0,
                 vertical: width > webScreenSize ? 15 : 0,
               ),
               child: PostCard(
-                snap: snapshot.data!.docs[index].data(),
+                snap: snapshot.data?.docs[index].data(),
               ),
             ),
           );

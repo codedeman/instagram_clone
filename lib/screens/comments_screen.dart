@@ -69,12 +69,16 @@ class _CommentsScreenState extends State<CommentsScreen> {
             return const Center(
               child: CircularProgressIndicator(),
             );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('An error occurred: ${snapshot.error}'),
+            );
           }
 
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (ctx, index) => CommentCard(
-              snap: snapshot.data!.docs[index],
+              snap: snapshot.data?.docs[index],
             ),
           );
         },
