@@ -76,7 +76,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
           }
 
           return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
+            itemCount: snapshot.data?.docs.length,
             itemBuilder: (ctx, index) => CommentCard(
               snap: snapshot.data?.docs[index],
             ),
@@ -102,7 +102,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                   child: TextField(
                     controller: commentEditingController,
                     decoration: InputDecoration(
-                      hintText: 'Comment as ${user!.username}',
+                      hintText: 'Comment as ${user?.username}',
                       border: InputBorder.none,
                     ),
                   ),

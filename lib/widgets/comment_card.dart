@@ -24,20 +24,28 @@ class CommentCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                            text: snap.data()['name'],
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black)),
-                        TextSpan(
-                            text: ' ${snap.data()['text']}',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black45)),
-                      ],
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      snap.data()['name'],
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                              text: ' ${snap.data()['text']}',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.black)),
+                        ],
+                      ),
                     ),
                   ),
                   Padding(
