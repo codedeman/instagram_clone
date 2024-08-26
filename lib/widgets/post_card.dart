@@ -187,11 +187,11 @@ class _PostCardState extends State<PostCard> {
                       print(
                           'Profile image tapped. User ID: ${widget.snap['uid']}, Username: ${widget.snap['username'].toString()}');
 
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) =>
-                      //             ProfileScreen(uid: user!.uid)));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ProfileScreen(uid: widget.snap['uid'])));
                     },
                     child: CircleAvatar(
                       radius: 16,
