@@ -32,7 +32,7 @@ class FollowButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
           ),
           alignment: Alignment.center,
-          width: 250,
+          width: 100,
           height: 27,
           child: Text(
             text,
@@ -65,8 +65,15 @@ class FollowButtonWidget extends StatelessWidget {
       return const SizedBox.shrink(); // Empty widget
     }
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        FollowButton(
+          text: 'Message',
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          borderColor: isFollowing ? Colors.grey : Colors.blue,
+          function: onFollowUnfollow,
+        ),
         FollowButton(
           text: isFollowing ? 'Unfollow' : 'Follow',
           backgroundColor: isFollowing ? Colors.white : Colors.blue,

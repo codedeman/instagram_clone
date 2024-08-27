@@ -310,6 +310,23 @@ class _PostCardState extends State<PostCard> {
               ),
             ),
             // LIKE, COMMENT SECTION OF THE POST
+
+            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+              Text(widget.snap["username"].toString(),
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
+              const SizedBox(width: 5), // Adjust the width as needed
+
+              Expanded(
+                child: Text(
+                  widget.snap["description"].toString(),
+                  style: const TextStyle(color: Colors.black),
+                  overflow: TextOverflow
+                      .ellipsis, // Add this if the text might be too long
+                ),
+              ),
+            ]),
+
             Row(
               children: <Widget>[
                 LikeAnimation(
