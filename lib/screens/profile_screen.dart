@@ -111,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 FollowButtonWidget(
                                   isFollowing: isFollowing,
-                                  followers: followers,
+                                  uid: widget.uid,
                                   onFollowUnfollow: () async {
                                     if (isFollowing) {
                                       await FireStoreMethods().followUser(

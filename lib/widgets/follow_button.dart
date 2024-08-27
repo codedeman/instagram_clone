@@ -49,37 +49,31 @@ class FollowButton extends StatelessWidget {
 
 class FollowButtonWidget extends StatelessWidget {
   final bool isFollowing;
-  final int followers;
+  final String uid;
   final VoidCallback onFollowUnfollow;
 
   const FollowButtonWidget({
     Key? key,
     required this.isFollowing,
-    required this.followers,
+    required this.uid,
     required this.onFollowUnfollow,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    if (FirebaseAuth.instance.currentUser!.uid == uid) {
+      return const SizedBox.shrink(); // Empty widget
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        FirebaseAuth.instance.currentUser!.uid ==
-                followers.toString() // Comparison condition
-            ? FollowButton(
-                text: 'Sign Out',
-                backgroundColor: mobileBackgroundColor,
-                textColor: primaryColor,
-                borderColor: Colors.grey,
-                function: onFollowUnfollow,
-              )
-            : FollowButton(
-                text: isFollowing ? 'Unfollow' : 'Follow',
-                backgroundColor: isFollowing ? Colors.white : Colors.blue,
-                textColor: isFollowing ? Colors.black : Colors.white,
-                borderColor: isFollowing ? Colors.grey : Colors.blue,
-                function: onFollowUnfollow,
-              ),
+        FollowButton(
+          text: isFollowing ? 'Unfollow' : 'Follow',
+          backgroundColor: isFollowing ? Colors.white : Colors.blue,
+          textColor: isFollowing ? Colors.black : Colors.white,
+          borderColor: isFollowing ? Colors.grey : Colors.blue,
+          function: onFollowUnfollow,
+        ),
       ],
     );
   }
