@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/helper/color.dart';
 
 class FollowButton extends StatelessWidget {
   final Function()? function;
@@ -6,14 +8,14 @@ class FollowButton extends StatelessWidget {
   final Color borderColor;
   final String text;
   final Color textColor;
-  const FollowButton({
-    Key? key,
-    required this.backgroundColor,
-    required this.borderColor,
-    required this.text,
-    required this.textColor,
-    this.function
-  }) : super(key: key);
+  const FollowButton(
+      {Key? key,
+      required this.backgroundColor,
+      required this.borderColor,
+      required this.text,
+      required this.textColor,
+      this.function})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class FollowButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
           ),
           alignment: Alignment.center,
-          width: 250,
+          width: 100,
           height: 27,
           child: Text(
             text,
@@ -41,6 +43,45 @@ class FollowButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class FollowButtonWidget extends StatelessWidget {
+  final bool isFollowing;
+  final String uid;
+  final VoidCallback onFollowUnfollow;
+
+  const FollowButtonWidget({
+    Key? key,
+    required this.isFollowing,
+    required this.uid,
+    required this.onFollowUnfollow,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (FirebaseAuth.instance.currentUser!.uid == uid) {
+      return const SizedBox.shrink(); // Empty widget
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        FollowButton(
+          text: 'Message',
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          borderColor: isFollowing ? Colors.grey : Colors.blue,
+          function: onFollowUnfollow,
+        ),
+        FollowButton(
+          text: isFollowing ? 'Unfollow' : 'Follow',
+          backgroundColor: isFollowing ? Colors.white : Colors.blue,
+          textColor: isFollowing ? Colors.black : Colors.white,
+          borderColor: isFollowing ? Colors.grey : Colors.blue,
+          function: onFollowUnfollow,
+        ),
+      ],
     );
   }
 }
