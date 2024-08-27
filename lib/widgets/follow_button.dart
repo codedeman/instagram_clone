@@ -24,6 +24,8 @@ class FollowButton extends StatelessWidget {
       child: TextButton(
         onPressed: function,
         child: Container(
+          padding: const EdgeInsets.symmetric(
+              horizontal: 8, vertical: 5), // Adjust these values
           decoration: BoxDecoration(
             color: backgroundColor,
             border: Border.all(
@@ -31,9 +33,9 @@ class FollowButton extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(5),
           ),
-          alignment: Alignment.center,
-          width: 100,
-          height: 27,
+          // alignment: Alignment.center,
+          // width: 100,
+          // height: 27,
           child: Text(
             text,
             style: TextStyle(
@@ -74,6 +76,7 @@ class FollowButtonWidget extends StatelessWidget {
           borderColor: isFollowing ? Colors.grey : Colors.blue,
           function: onFollowUnfollow,
         ),
+        const SizedBox(width: 0), // Reduced width to bring the buttons closer
         FollowButton(
           text: isFollowing ? 'Unfollow' : 'Follow',
           backgroundColor: isFollowing ? Colors.white : Colors.blue,
