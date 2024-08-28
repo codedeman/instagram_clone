@@ -1,89 +1,40 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../helper/color.dart';
 import '../providers/user_provider.dart';
 import '../resources/firestore_methods.dart';
 import '../until/utils.dart';
 
-class AddPostScreen extends StatefulWidget {
-  const AddPostScreen({Key? key}) : super(key: key);
+class NextScreen extends StatefulWidget {
+  final Uint8List
+      selectedImage; // Selected image passed from the previous screen
+
+  const NextScreen({Key? key, required this.selectedImage}) : super(key: key);
 
   @override
-  _AddPostScreenState createState() => _AddPostScreenState();
+  _NextScreenState createState() => _NextScreenState();
 }
 
-class _AddPostScreenState extends State<AddPostScreen> {
-  Uint8List? _file;
+class _NextScreenState extends State<NextScreen> {
   bool isLoading = false;
   final TextEditingController _descriptionController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     Provider.of<UserProvider>(context, listen: false).refreshUser();
   }
 
-  _selectImage(BuildContext parentContext) async {
-    return showDialog(
-      context: parentContext,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text('Create a Post'),
-          children: <Widget>[
-            SimpleDialogOption(
-                padding: const EdgeInsets.all(20),
-                child: const Text('Take a photo'),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  Uint8List file = await pickImage(ImageSource.camera);
-                  setState(() {
-                    _file = file;
-                  });
-                }),
-            SimpleDialogOption(
-                padding: const EdgeInsets.all(20),
-                child: const Text('Choose from Gallery'),
-                onPressed: () async {
-                  try {
-                    Navigator.of(context).pop();
-                    Uint8List file = await pickImage(ImageSource.gallery);
-                    if (file.isNotEmpty) {
-                      setState(() {
-                        _file = file;
-                      });
-                    } else {
-                      // Handle the case where the image is empty (just in case)
-                      print('Picked image is empty');
-                    }
-                  } catch (e) {
-                    // Handle any potential errors that might occur during image picking
-                    print('Error picking image: $e');
-                  }
-                }),
-            SimpleDialogOption(
-              padding: const EdgeInsets.all(20),
-              child: const Text("Cancel"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            )
-          ],
-        );
-      },
-    );
-  }
-
   void postImage(String uid, String username, String profImage) async {
     setState(() {
       isLoading = true;
     });
-    // start the loading
     try {
-      // upload to storage and db
+      // Upload to storage and database
       String res = await FireStoreMethods().uploadPost(
         _descriptionController.text,
-        _file!,
+        widget.selectedImage, // Using the selected image
         uid,
         username,
         profImage,
@@ -117,107 +68,93 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   void clearImage() {
     setState(() {
-      _file = null;
+      Navigator.pop(context); // Pop the current screen
     });
   }
 
   @override
   void dispose() {
-    super.dispose();
     _descriptionController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final UserProvider userProvider = Provider.of<UserProvider>(context);
 
-    return _file == null
-        ? Center(
-            child: IconButton(
-              icon: const Icon(
-                Icons.upload,
-              ),
-              onPressed: () => _selectImage(context),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: mobileBackgroundColor,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: clearImage,
+        ),
+        title: const Text('Post to'),
+        centerTitle: false,
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => postImage(
+              userProvider.getUser!.uid,
+              userProvider.getUser!.username,
+              userProvider.getUser!.photoUrl,
+            ),
+            child: const Text(
+              "Post",
+              style: TextStyle(
+                  color: Colors.blueAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0),
             ),
           )
-        : Scaffold(
-            appBar: AppBar(
-              backgroundColor: mobileBackgroundColor,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: clearImage,
-              ),
-              title: const Text(
-                'Post to',
-              ),
-              centerTitle: false,
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => postImage(
-                    userProvider.getUser!.uid,
-                    userProvider.getUser!.username,
-                    userProvider.getUser!.photoUrl,
-                  ),
-                  child: const Text(
-                    "Post",
-                    style: TextStyle(
-                        color: Colors.blueAccent,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.0),
-                  ),
-                )
-              ],
-            ),
-            // POST FORM
-            body: Column(
-              children: <Widget>[
-                isLoading
-                    ? const LinearProgressIndicator()
-                    : const Padding(padding: EdgeInsets.only(top: 0.0)),
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    CircleAvatar(
-                      backgroundColor: Colors.red,
-                      backgroundImage: NetworkImage(
-                        userProvider.getUser!.photoUrl,
-                      ),
-                    ),
-                    // SizedBox(width: 8), //
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      child: TextField(
-                        controller: _descriptionController,
-                        decoration: const InputDecoration(
-                          hintText: "Write a caption...",
-                          border: InputBorder.none,
-                        ),
-                        maxLines: 8,
-                      ),
-                    ),
-                    SizedBox(width: 8), //
-                    SizedBox(
-                      height: 45.0,
-                      width: 45.0,
-                      child: AspectRatio(
-                        aspectRatio: 487 / 451,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                            fit: BoxFit.fill,
-                            alignment: FractionalOffset.topCenter,
-                            image: MemoryImage(_file!),
-                          )),
-                        ),
-                      ),
-                    ),
-                  ],
+        ],
+      ),
+      body: Column(
+        children: <Widget>[
+          isLoading
+              ? const LinearProgressIndicator()
+              : const Padding(padding: EdgeInsets.only(top: 0.0)),
+          const Divider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              CircleAvatar(
+                backgroundColor: Colors.red,
+                backgroundImage: NetworkImage(
+                  userProvider.getUser!.photoUrl,
                 ),
-                const Divider(),
-              ],
-            ),
-          );
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: TextField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(
+                    hintText: "Write a caption...",
+                    border: InputBorder.none,
+                  ),
+                  maxLines: 8,
+                ),
+              ),
+              SizedBox(
+                height: 45.0,
+                width: 45.0,
+                child: AspectRatio(
+                  aspectRatio: 487 / 451,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                      fit: BoxFit.fill,
+                      alignment: FractionalOffset.topCenter,
+                      image: MemoryImage(widget.selectedImage),
+                    )),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Divider(),
+        ],
+      ),
+    );
   }
 }
